@@ -16,22 +16,27 @@ from tkinter import messagebox
 
 def sourceEconData(*args):
     try:
-        #BASE_LOCATION = input('Please enter base location:')
+        ## FILE LOCATION SETUP ##
+
+        # Source base location from user input in application
         baseLocationValue = str(baseLocation.get())
-        #BASE_LOCATION = r'xxxxx' # input file location for testing
-        #INPUT_FILE = input('Please enter input file name:')
+        # Source input file 1 name from user input in application
         inputFileValue1 = str(inputFile1.get())
+        # Source input file 2 name from user input in application
         inputFileValue2 = str(inputFile2.get())
+        # Label input file 1 descriptions from user input in application --> flows into final charts
         inputFileDescValue1 = str(inputFileDesc1.get())
-        inputFileDescValue2 = str(inputFileDesc2.get())        
-        #INPUT_FILE = r'xxxxxxx' # input file name for testing 
+        # Label input file 2 descriptions from user input in application --> flows into final charts
+        inputFileDescValue2 = str(inputFileDesc2.get())
 
-
+        # Define file paths based on user input in application. Input files and output files are stored in seperate folders.
         inputFilePath1 = f'{baseLocationValue}\\01_Input\\{inputFileValue1}.csv'
         inputFilePath2 = f'{baseLocationValue}\\01_Input\\{inputFileValue2}.csv'
         outputLocation = f'{baseLocationValue}\\02_Output'
 
-        # Source csv files as pandas dataframes
+        ## DATA SOURCING AND PRE-PROCESSING ##
+
+        # Source csv files as pandas dataframes. These files can be any downloaded file from FRED with the column format DATE, {some_value} 
         df_1input = pd.read_csv(inputFilePath1, sep=',')
         df_2input = pd.read_csv(inputFilePath2, sep=',')
 
@@ -49,12 +54,43 @@ def sourceEconData(*args):
         # Stack dataframes for plotting and assign formatted values
         df_inputStack = pd.concat([df_1inputPreproc, df_2inputPreproc])
 
-        df_inputStackFormatted = pd.DataFrame()
+        df_inputStackFormatted = pd.DataFrame() # create empty dataframe to store formatted table
         df_inputStackFormatted['Date'] = df_inputStack['DATE']
         df_inputStackFormatted['Index Value'] = df_inputStack['value']
         df_inputStackFormatted['Variable Description'] = df_inputStack['variable_desc']
 
-        ## PLOTLY FIGURE CREATION
+        # Join dataframes to create a wide-format table for period-specific analysis
+        df_inputJoin = df_1inputPreproc.merge(df_2inputPreproc,
+                                              on='DATE', # date used as unique key
+                                              how='inner' # only output information where the unique key exists in each dataset, as some datasets are either available on different cadences or from different time periods
+                                              )
+        
+        ## Calculations ##
+
+        # Calculate correlation coefficient (r)
+        result_correlation = df_inputJoin['value_x'].corr(df_inputJoin['value_y']) # in numpy --> np.corrcoef(df_inputJoin['value_x'], df_inputJoin['value_y'])[0,1]
+        message_result_correlation = f'Correlation coefficient = {result_correlation:.4f}.' # format the correlation results (to 4 decimal places) for output message
+
+        # Calculate number of time periods available for comparison and in each dataset
+        #len_df1 = len(df_1inputPreproc)
+        #minYear_df1 = df_1inputPreproc['DATE'].min().year
+        #maxYear_df1 = df_1inputPreproc['DATE'].max().year
+        #len_df2 = len(df_2inputPreproc)
+        #minYear_df2 = df_2inputPreproc['DATE'].min().year
+        #maxYear_df2 = df_2inputPreproc['DATE'].max().year
+        #len_dfJoined = len(df_inputJoin)
+        #minYear_dfJoined = df_inputJoin['DATE'].min().year
+        #maxYear_dfJoined = df_inputJoin['DATE'].max().year
+        
+       # message_timeHorizon = (f'''{inputFileDescValue1} table has {len_df1} records from {minYear_df1} to {maxYear_df1}.
+        #                       {inputFileDescValue2} table has {len_df2} records from {minYear_df2} to {maxYear_df2}.
+         #                      Joined table has {len_dfJoined} records from {minYear_dfJoined} to {maxYear_dfJoined}.
+          #                     '''
+           #                    )
+        # Combine messages for final results message.
+        message_outputComplete = f'{message_result_correlation}'
+
+        ## PLOTLY FIGURE CREATION ##
     
         # Create simple line chart plotting the value of each economic indicator over time
         fig_simpleLineChart = px.line(df_inputStackFormatted, 
@@ -101,7 +137,7 @@ def sourceEconData(*args):
         os.system(f'start {outputHTML_simpleTable}')
         os.system(f'start {outputHTML_simpleLineChart}')
 
-        messagebox.showinfo(message='Economic Analysis Chart Complete!')
+        messagebox.showinfo(message=message_outputComplete)
         print('Complete')
     except:
         messagebox.showinfo(message='Error - please confirm file path and file name')
