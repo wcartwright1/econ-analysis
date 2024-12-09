@@ -14,6 +14,19 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 
+class UserInputValidation:
+    def __init__(self):
+        pass
+    
+#    def validate_input_string(self, user_input):
+#        try:
+#            user_input = int(user_input)
+#        except: user_input('Please enter a string')
+#
+#        return user_input
+
+
+
 class SetParameters:
     def __init__(self):
         pass
@@ -23,6 +36,7 @@ class SetParameters:
         Source the inputs from the user and store in a variable to use when 1) creating file paths 2) Labeling charts or tables.
         '''
         result_user_input_string = str(user_input_string.get())
+        
         return result_user_input_string
 
     def define_file_path(self, base_location_value, folder_prefix):
@@ -30,6 +44,7 @@ class SetParameters:
         Used to create an initial file path based on the passed user inputs.
         '''
         result_file_path = f'{base_location_value}\\{folder_prefix}'
+        
         return result_file_path
       
     def define_full_file_path(self, base_location_value, folder_prefix, file_name, file_type):
@@ -37,8 +52,19 @@ class SetParameters:
         Used to create a complete file path with file names and file types based on the passed user inputs.
         '''
         result_full_file_path = f'{base_location_value}\\{folder_prefix}\\{file_name}.{file_type}'
+        
         return result_full_file_path
+    
+    def define_full_output_file_path(self, base_location_value, folder_prefix, file_name, indicator_1, indicator_2, output_file_type):
+        '''
+        Used to create a complete file path for output based on the current date and passed user inputs.
+        '''
+        run_date = run_date = dt.date.today()
+        run_date_formatted = run_date.strftime('%Y%m%d')
+        result_output_file_path = f'{base_location_value}\\{folder_prefix}\\{file_name}_{indicator_1}_{indicator_2}_{run_date_formatted}.{output_file_type}'
 
+        return result_output_file_path
+    
 class CreateUserInterface:
     def __init__(self):
         pass
@@ -118,7 +144,7 @@ class PreProcessData:
     
     def stack_and_format(self, df_1, df_2):
         '''
-        Create a stacked dataframe from both data sources for use in the time-series chart.
+        Create a stacked dataframe from both data sources for use in the time series chart.
         Update column names to be easily understood by business user's in charts and tables.
         '''
         df_input_stack = pd.concat([df_1, df_2]) # Stack dataframes for plotting
@@ -182,19 +208,19 @@ class VisualizationCreation:
     def __init__(self):
         pass
 
-    def create_line_chart(self, df, desc_input_variable_1, desc_input_variable_2):
+    def create_time_series_chart(self, df, desc_input_variable_1, desc_input_variable_2):
         '''
-        Create a time-series chart based on the indicators in the datasets.
-        Each line of the time-series chart will be a different color based on the indicator.
+        Create a time series chart based on the indicators in the datasets.
+        Each line of the time series chart will be a different color based on the indicator.
         '''
-        fig_simple_line_chart = px.line(df,
-                                        x='Date',
-                                        y='Index Value',
-                                        color='Variable Description',
-                                        title=f'{desc_input_variable_1} & {desc_input_variable_2}'
-                                        )
+        fig_time_series = px.line(df,
+                                  x='Date',
+                                  y='Index Value',
+                                  color='Variable Description',
+                                  title=f'{desc_input_variable_1} & {desc_input_variable_2}'
+                                  )
         
-        return fig_simple_line_chart
+        return fig_time_series
     
     def create_table(self, df):
         '''
@@ -215,6 +241,7 @@ class VisualizationCreation:
         return fig_simple_table
 
 ### SET UP CLASSES THAT WILL BE USED IN PROCESS ###
+UserInputValidation = UserInputValidation()
 SetParameters = SetParameters()
 CreateUserInterface = CreateUserInterface()
 PreProcessData = PreProcessData()
@@ -236,6 +263,8 @@ def source_econ_data(*args):
     input_full_file_path_2 = SetParameters.define_full_file_path(base_location, '01_Input', input_file_2, 'csv')
     output_file_path = SetParameters.define_file_path(base_location, '02_Output')
 
+    ## VALIDATE USER INPUT ##
+    UserInputValidation.validate_input_string(base_location)
     ## DATA SOURCING AND PRE-PROCESSING ##
 
     # Source csv files as pandas dataframes. These files can be any downloaded file from FRED with the column format DATE, {some_value}  
@@ -278,7 +307,7 @@ def source_econ_data(*args):
     ## PLOTLY FIGURE CREATION
 
     # Create simple line chart plotting the value of each economic indicator over time
-    fig_line_chart = VisualizationCreation.create_line_chart(df_preproc_stack_formatted, input_desc_1, input_desc_2)
+    fig_time_series = VisualizationCreation.create_time_series_chart(df_preproc_stack_formatted, input_desc_1, input_desc_2)
 
     # Create simple table including the raw values from the data tables
     fig_table = VisualizationCreation.create_table(df_preproc_stack_formatted)
@@ -286,22 +315,22 @@ def source_econ_data(*args):
     ## OUTPUT STEPS ##
 
     # Define output file names
-    output_file_line_chart_PDF = f'{output_file_path}\\lineChart.pdf'
-    output_file_line_chart_HTML = f'{output_file_path}\\lineChart.html'
-    output_file_table_PDF = f'{output_file_path}\\table.pdf'
-    output_file_table_HTML = f'{output_file_path}\\table.html'
+    output_file_time_series_PDF = SetParameters.define_full_output_file_path(base_location, '02_Output', 'timeSeries', input_file_1, input_file_2, 'pdf')
+    output_file_time_series_HTML = SetParameters.define_full_output_file_path(base_location, '02_Output', 'timeSeries', input_file_1, input_file_2, 'html')
+    output_file_table_PDF = SetParameters.define_full_output_file_path(base_location, '02_Output', 'table', input_file_1, input_file_2, 'pdf')
+    output_file_table_HTML = SetParameters.define_full_output_file_path(base_location, '02_Output', 'table', input_file_1, input_file_2, 'html')
 
     # Output HTML files
-    fig_line_chart.write_html(output_file_line_chart_HTML)
+    fig_time_series.write_html(output_file_time_series_HTML)
     fig_table.write_html(output_file_table_HTML)
     
     # Output PDFs
-    pio.write_image(fig_line_chart, output_file_line_chart_PDF)
+    pio.write_image(fig_time_series, output_file_time_series_PDF)
     pio.write_image(fig_table, output_file_table_PDF)
 
     # Open HTML in browser for user review
     os.system(f'start {output_file_table_HTML}')
-    os.system(f'start {output_file_line_chart_HTML}')
+    os.system(f'start {output_file_time_series_HTML}')
 
     # Print output message in application
     messagebox.showinfo(message=f'Comparison between "{input_desc_1}" and "{input_desc_2}" is complete! {results_correlation[1]}')
