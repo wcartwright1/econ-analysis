@@ -112,7 +112,7 @@ class PreProcessData:
 
         return df_input_stack_formatted
     
-class AnalyisCalculations:
+class AnalysisCalculations:
     def __init__(self):
         pass
 
@@ -163,7 +163,7 @@ class VisualizationCreation:
 SetParameters = SetParameters()
 CreateUserInterface = CreateUserInterface()
 PreProcessData = PreProcessData()
-AnalyisCalculations = AnalyisCalculations()
+AnalysisCalculations = AnalysisCalculations()
 VisualizationCreation = VisualizationCreation()
 
 ### PROCESS DEFINITION ###
@@ -203,11 +203,11 @@ def source_econ_data(*args):
     ## CALCULATIONS ##
 
     # Calculate correlation coefficient and create message for output
-    results_correlation = AnalyisCalculations.calc_correlation(df_preproc_joined, 'value_x', 'value_y')
+    results_correlation = AnalysisCalculations.calc_correlation(df_preproc_joined, 'value_x', 'value_y')
 
     # Calculate number of time periods available for comparison and in each dataset
-    results_time_horizon_1 = AnalyisCalculations.calc_dataset_periods(df_preproc_1, 'reporting_date', input_desc_1)
-    results_time_horizon_2 = AnalyisCalculations.calc_dataset_periods(df_preproc_2, 'reporting_date', input_desc_2)
+    results_time_horizon_1 = AnalysisCalculations.calc_dataset_periods(df_preproc_1, 'reporting_date', input_desc_1)
+    results_time_horizon_2 = AnalysisCalculations.calc_dataset_periods(df_preproc_2, 'reporting_date', input_desc_2)
 
     ## PLOTLY FIGURE CREATION
 
