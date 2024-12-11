@@ -1,0 +1,10 @@
+analysis_description,analysis_result,result_data_type,run_date,created_by
+Correlation,0.873329172106935,float,2024-12-11,billy
+Lag Correlation Global price of Energy index,0.8869002075827782,float,2024-12-11,billy
+Lag Periods Global price of Energy index,6.0,int,2024-12-11,billy
+Lag Correlation Global price of Industrial Materials index,0.8588093095602465,float,2024-12-11,billy
+Lag Periods Global price of Industrial Materials index,6.0,int,2024-12-11,billy
+Lead Correlation Global price of Energy index,0.7798944118104435,float,2024-12-11,billy
+Lead Periods Global price of Energy index,6.0,int,2024-12-11,billy
+Lead Correlation Global price of Industrial Materials index,0.8869002075827782,float,2024-12-11,billy
+Lead Periods Global price of Industrial Materials index,6.0,int,2024-12-11,billy
