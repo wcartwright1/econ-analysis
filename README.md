@@ -1,7 +1,7 @@
 # Economic Analysis Case Study
  
 ## Overview
-The purpose of this project is to create an application in Python (EconAnalysisApp.py) to analyze the relationship between two economic indicators from the Federal Reserve Economic Data (FRED) database. This project includes a Python script to source, transform, and analyze the datasets, as well as create a time-series chart and table to present the results of the analysis. The Python script sits beneath a tkinter user interface to make it easier for business users to use the process. The charts and tables are output as a PDF and an interactive html file. csv and hyper outputs are also included for use in a Tableau dashboard.
+The purpose of this project is to create an application in Python (EconAnalysisApp.py) to analyze the relationship between two economic indicators from the Federal Reserve Economic Data (FRED) database. This project includes a Python script to source, transform, and analyze the datasets, as well as create a time-series chart and table to present the results of the analysis. The Python script sits beneath a tkinter user interface to make it easier for business users to use the process. The charts and tables are output as PDFs and interactive html files. csv outputs are also included for use in a Tableau dashboard.
 
 ## Key Technologies Used
 - Python
